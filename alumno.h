@@ -6,7 +6,8 @@
 #define mail_size 23
 #define cond_size 10
 
-typedef struct{
+typedef struct
+{
     char codigo[cod_alumno_size];
     char nombreCompleto[nomb_size];
     char mail[mail_size];
@@ -14,4 +15,13 @@ typedef struct{
     char condicion[cond_size];
 } alumno;
 
+void mostrarDatos(alumno x)
+{
+    printf("\n    ###################################");
+    printf("\n     + Codigo: %s", x.codigo);
+    printf("\n       + Alumno: %s", x.nombreCompleto);
+    printf("\n       + Mail: %s", x.mail);
+    printf("\n       + Nota: %d", x.nota);
+    printf("\n       + Condicion: %s", x.condicion);
+}
 #endif // ALUMNO_H_INCLUDED
