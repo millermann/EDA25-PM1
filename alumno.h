@@ -1,10 +1,10 @@
 #ifndef ALUMNO_H_INCLUDED
 #define ALUMNO_H_INCLUDED
-
-#define cod_alumno_size 7
-#define nomb_size 80
-#define mail_size 23
-#define cond_size 10
+// +1 por el caracter nulo de c
+#define cod_alumno_size 8
+#define nomb_size 81
+#define mail_size 24
+#define cond_size 11
 
 typedef struct
 {
