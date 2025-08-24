@@ -130,7 +130,7 @@ int baja(char codigo[], LSO *lista)
     return borrar;
 }
 
-int pertenece(char codigo[], LSO *lista) // mas al pedo que concha de monja
+int pertenece(char codigo[], LSO *lista)
 {
     // control para listas vacias aca?
     if (localizar(codigo, lista) == 0)
@@ -141,16 +141,84 @@ int pertenece(char codigo[], LSO *lista) // mas al pedo que concha de monja
 
 int modificar(char codigo[], LSO *lista)
 {
-
-    if (localizar(codigo, lista) != 0)
+    int exito = -1;
+    if (localizar(codigo, lista) == 0)
     {
-        return 0;
-    }
-    else
-    {
-    }
+        int check_resp = 0, resp = 0;
+        mostrarDatos(peek(*lista));
+        alumno x;
+        strcpy(x.codigo, peek(*lista).codigo);
 
-    return 0;
+        printf("\n\n - Ingrese el nombre completo del alumno: ");
+        scanf(" %[^\n]", x.nombreCompleto);
+
+        printf("\n - Ingrese el correo del alumno: ");
+        scanf("%s", x.mail);
+
+        printf("\n - Ingrese la nota del alumno: ");
+        check_resp = scanf("%d", &x.nota);
+        while (x.nota < 0 || x.nota > 10 || check_resp != 1)
+        {
+            printf("\n\a # La nota ingresada no es valida (0 <= nota <= 10), por favor vuelva a intentar...");
+            printf("\n - Ingrese el codigo del alumno: ");
+            fflush(stdin);
+            check_resp = scanf("%d", &x.nota);
+        }
+
+        printf("\n - Seleccione la condicion del alumno: ");
+        printf("\n (1) Promociona, (2) Regular, (3) Libre, (4) Ausente");
+        printf("\n + Resp: ");
+        check_resp = scanf("%d", &resp);
+        while (resp < 1 || resp > 4 || check_resp != 1)
+        {
+            printf("\n\a # Respuesta no valida, por favor vuelva a intentar...");
+            printf("\n - Seleccione la condicion del alumno: ");
+            printf("\n (1) Promociona, (2) Regular, (3) Libre, (4) Ausente");
+            printf("\n + Resp: ");
+            fflush(stdin);
+            check_resp = scanf("%d", &resp);
+        }
+        switch (resp)
+        {
+        case 1:
+            strcpy(x.condicion, "Promociona");
+            break;
+        case 2:
+            strcpy(x.condicion, "Regular");
+            break;
+        case 3:
+            strcpy(x.condicion, "Libre");
+            break;
+        case 4:
+            strcpy(x.condicion, "Ausente");
+        }
+
+        system("cls");
+        printf("\n # # # #   M O D I F I C A R   A L U M N O S   # # # #\n");
+        printf("\n - Antes: ");
+        mostrarDatos(peek(*lista));
+        printf("\n - Modificado: ");
+        mostrarDatos(x);
+        printf("\n - Desea efectuar las modificaciones? (1 = Si / 0 = No)");
+        printf("\n + Resp: ");
+        check_resp = scanf("%d", &resp);
+        while (resp < 0 || resp > 1 || check_resp != 1)
+        {
+            printf("\n\a # Respuesta no valida.");
+            printf("\n + Resp: ");
+            fflush(stdin);
+            check_resp = scanf("%d", &resp);
+        }
+        exito = resp;
+        if (resp == 1)
+        {
+            strcpy(lista->vipd[lista->cur].nombreCompleto, x.nombreCompleto);
+            strcpy(lista->vipd[lista->cur].mail, x.mail);
+            lista->vipd[lista->cur].nota = x.nota;
+            strcpy(lista->vipd[lista->cur].condicion, x.condicion);
+        }
+    }
+    return exito;
 }
 
 int memorizar(char direccionArchivo[], LSO *lista, int info[]) // INC
@@ -193,7 +261,16 @@ int memorizar(char direccionArchivo[], LSO *lista, int info[]) // INC
     return 0;
 }
 
-// evocacion
+int evocar(char codigo[], LSO *lista)
+{
+    if (localizar(codigo, lista) == 0)
+    {
+        mostrarDatos(peek(*lista));
+        return 1;
+    }
+    else
+        return 0;
+}
 
 /*void memorizar
     controlar e informar:

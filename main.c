@@ -62,7 +62,7 @@ int main()
                 }
 
                 printf("\n - Ingrese el nombre completo del alumno: ");
-                scanf("%s", x.nombreCompleto);
+                scanf(" %[^\n]", x.nombreCompleto);
 
                 printf("\n - Ingrese el correo del alumno: ");
                 scanf("%s", x.mail);
@@ -169,6 +169,7 @@ int main()
 
             break;
         }
+
         case 3:
         {
             system("cls");
@@ -178,13 +179,64 @@ int main()
                 printf("\n\a # No hay alumnos cargados en la base...");
             else
             {
+                int exito;
                 char codigo[cod_alumno_size];
                 printf("\n - Ingrese el codigo del alumno: ");
                 scanf("%s", codigo);
-                
+                // control mayus
+                exito = modificar(codigo, &listaUsada);
+                switch (exito)
+                {
+                case -1:
+                    printf("\n\a # No se pudo encontrar al alumno...");
+                    break;
+                case 0:
+                    printf("\n\a # No se han efectuado los cambios...");
+                    break;
+                case 1:
+                    printf("\n # Se han efectuado los cambios...");
+                }
             }
+            printf("\n\n - Pulse para volver al menu...");
+            fflush(stdin);
+            getchar();
             break;
         }
+
+        case 4:
+        {
+            system("cls");
+            printf("\n # # # #   E V O C A R   # # # #\n");
+
+            if (isEmpty(listaUsada))
+                printf("\n\a # No hay alumnos cargados en la base...");
+            else
+            {
+                int exito;
+                char codigo[cod_alumno_size];
+                printf("\n - Ingrese el codigo del alumno: ");
+                scanf("%s", codigo);
+                // control mayus
+                exito = modificar(codigo, &listaUsada);
+                switch (exito)
+                {
+                case -1:
+                    printf("\n\a # No se pudo encontrar al alumno...");
+                    break;
+                case 0:
+                    printf("\n\a # No se han efectuado los cambios...");
+                    break;
+                case 1:
+                    printf("\n # Se han efectuado los cambios...");
+                }
+            }
+            printf("\n\n - Pulse para volver al menu...");
+            fflush(stdin);
+            getchar();
+            break;
+
+        }
+
         case 5:
         {
             int info[2];
@@ -221,6 +273,7 @@ int main()
             }
             else
             {
+                // esta bien usar estas funciones aca??
                 int aux = 0;
 
                 resetCur(&listaUsada);
