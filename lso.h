@@ -44,6 +44,11 @@ int isOos(LSO lista)
         return 0;
 }
 
+alumno peek(LSO lista)
+{
+    return lista.vipd[lista.cur];
+}
+
 void forward(LSO *lista)
 {
     lista->cur++;
@@ -57,10 +62,9 @@ void resetCur(LSO *lista)
 int localizar(char id[], LSO *lista) // Exito = 0
 {
     int resultado;
-    // control aca isEmpty????
 
     resetCur(lista);
-    while (!isOos(*lista) && (resultado = strcmp(lista->vipd[lista->cur].codigo, id)) < 0)
+    while (!isOos(*lista) && (resultado = strcmp(peek(*lista).codigo, id)) < 0)
     {
         // deja el cur justo en la celda del 1er elem (>=) a x que encuentra
         forward(lista);
@@ -96,23 +100,23 @@ void alta(alumno x, LSO *lista)
 
 int baja(char codigo[], LSO *lista)
 {
-    int opcion = -1, check_resp = 0;
+    int borrar = -1, check_resp = 0;
 
     if (localizar(codigo, lista) == 0)
     {
-        mostrarDatos(lista->vipd[lista->cur]);
+        mostrarDatos(peek(*lista));
         printf("\n\n - Seguro desea dar de baja al alumno (1 = Si / 0 = No)");
         printf("\n + Resp: ");
-        check_resp = scanf("%d", &opcion);
-        while (opcion > 1 || opcion < 0 || check_resp != 1)
+        check_resp = scanf("%d", &borrar);
+        while (borrar > 1 || borrar < 0 || check_resp != 1)
         {
             printf("\n\a # Respuesta invalida...");
             printf("\n\n + Resp: ");
             fflush(stdin);
-            check_resp = scanf("%d", &opcion);
+            check_resp = scanf("%d", &borrar);
         }
 
-        if (opcion == 1)
+        if (borrar == 1)
         {
             int aux = lista->cur;
             while (aux < lista->ultimoElem)
@@ -123,8 +127,7 @@ int baja(char codigo[], LSO *lista)
             lista->ultimoElem = (lista->ultimoElem) - 1;
         }
     }
-    return opcion;
-
+    return borrar;
 }
 
 int pertenece(char codigo[], LSO *lista) // mas al pedo que concha de monja
@@ -136,17 +139,17 @@ int pertenece(char codigo[], LSO *lista) // mas al pedo que concha de monja
         return 0;
 }
 
-int modificar(char codigo[], LSO *lista){
-    
-    if (localizar(codigo, lista)!=0)
+int modificar(char codigo[], LSO *lista)
+{
+
+    if (localizar(codigo, lista) != 0)
     {
         return 0;
     }
-    else{
-        
+    else
+    {
     }
-    
-    
+
     return 0;
 }
 

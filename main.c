@@ -236,7 +236,7 @@ int main()
                         aux = 0;
                     }
                     aux++;
-                    mostrarDatos(listaUsada.vipd[listaUsada.cur]);
+                    mostrarDatos(peek(listaUsada));
                     forward(&listaUsada);
                 }
                 printf("\n\n # No hay mas alumnos para mostrar...");
