@@ -3,3 +3,17 @@
 	<stdio.h>
 	<stdlib.h>
 
+1756172780 source:c:\users\maria\desktop\pm1\main.c
+	<stdio.h>
+	<stdlib.h>
+	"LSO.h"
+	"alumno.h"
+
+1755985271 c:\users\maria\desktop\pm1\alumno.h
+
+1756170656 c:\users\maria\desktop\pm1\lso.h
+	<string.h>
+	<stdio.h>
+	<ctype.h>
+	"alumno.h"
+

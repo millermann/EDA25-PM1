@@ -1,3 +1,6 @@
+// Grupo 29
+// Mariano Valentino Quiroga Puliti, Elias Ismael Videla
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "LSO.h"
