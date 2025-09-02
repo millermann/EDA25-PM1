@@ -70,49 +70,70 @@ void resetCur(LSO *lista)
     lista->cur = 0;
 }
 
-int localizar(char id[], LSO *lista) // Exito = 0
+void localizar(char id[], LSO *lista, int *pos, int *exito) // 1 = Exito, 0 = No encontrado
 {
-    int resultado;
+    int comparar = -1;
 
-    resetCur(lista);
-    while (!isOos(*lista) && (resultado = strcmp(peek(*lista).codigo, id)) < 0)
+    lista->cur = 0;
+    while (!isOos(*lista) && (comparar = strcmp(peek(*lista).codigo, id)) < 0)
     {
-        forward(lista); // deja el cur justo en la celda del 1er elem (>=) a x que encuentra
+        lista->cur++; // deja el cur justo en la celda del 1er elem (>=) a x que encuentra
     }
 
-    return (resultado);
+    if (comparar == 0)
+        *exito = 1;
+    else
+        *exito = 0;
+
+    *pos = lista->cur;
 }
 
-void alta(alumno x, LSO *lista)
+void alta(alumno x, LSO *lista, int *exito) // -1 = No espacio, 0 = Repetido, 1 = Exito
 {
-    // antes de pedirle ingresar los datos al usuario controlar que hay espacio para un elem mas
-    // cuando ingresa el codigo de registro controlar que no este en la lista y pedir correccion
-    if (isEmpty(*lista) != 1)
-    {
-        localizar(x.codigo, lista);
-
-        int aux = lista->ultimoElem;
-        while (aux >= lista->cur)
-        {
-            lista->vipd[aux + 1] = lista->vipd[aux];
-            aux--;
-        }
-        lista->vipd[lista->cur] = x;
-        lista->ultimoElem = (lista->ultimoElem) + 1;
-    }
-    else
+    int pos;
+    if (isEmpty(*lista))
     {
         lista->cur = 0;
         lista->vipd[0] = x;
         lista->ultimoElem = 0;
+        *exito = 1;
+    }
+
+    else
+    {
+        localizar(x.codigo, lista, &pos, exito);
+        if (*exito == 1)
+        {
+            *exito = 0;
+        }
+        else
+        {
+            if (!isFull(*lista))
+            {
+                int aux = lista->ultimoElem;
+                while (aux >= pos)
+                {
+                    lista->vipd[aux + 1] = lista->vipd[aux];
+                    aux--;
+                }
+                lista->vipd[pos] = x;
+                lista->ultimoElem = (lista->ultimoElem) + 1;
+                *exito = 1;
+            }
+            else
+            {
+                *exito = -1;
+            }
+        }
     }
 }
 
-int baja(char codigo[], LSO *lista)
+void baja(char codigo[], LSO *lista, int *exito) // -1 = No encontrado, 0 = No confirmado, 1 = Exito
 {
-    int borrar = -1, check_resp = 0;
+    int borrar, check_resp = 0, pos;
 
-    if (localizar(codigo, lista) == 0)
+    localizar(codigo, lista, &pos, exito);
+    if (*exito == 1)
     {
         mostrarDatos(peek(*lista));
         printf("\n\n - Seguro desea dar de baja al alumno (1 = Si / 0 = No)");
@@ -126,9 +147,10 @@ int baja(char codigo[], LSO *lista)
             check_resp = scanf("%d", &borrar);
         }
 
+        *exito = borrar;
         if (borrar == 1)
         {
-            int aux = lista->cur;
+            int aux = pos;
             while (aux < lista->ultimoElem)
             {
                 lista->vipd[aux] = lista->vipd[aux + 1];
@@ -137,30 +159,32 @@ int baja(char codigo[], LSO *lista)
             lista->ultimoElem = (lista->ultimoElem) - 1;
         }
     }
-    return borrar;
+    else *exito = -1;
+
 }
 
 int pertenece(char codigo[], LSO *lista)
 {
-    int exito = 0;
+    int exito = 0, pos;
     if (!isEmpty(*lista))
     {
-        if (localizar(codigo, lista) == 0)
-            exito = 1;
+        localizar(codigo, lista, &pos, &exito);
     }
     return exito;
 }
 
-int modificar(char codigo[], LSO *lista)
+void modificar(char codigo[], LSO *lista, int *exito) // -1 = No encontrado, 0 = No confirmado, 1 = Modificado
 {
-    int exito = -1;
-    if (localizar(codigo, lista) == 0)
+    int pos;
+
+    localizar(codigo, lista, &pos, exito);
+    if (*exito == 1)
     {
         int check_resp = 0, resp = 0;
-        mostrarDatos(peek(*lista));
         alumno x;
         strcpy(x.codigo, peek(*lista).codigo);
 
+        mostrarDatos(peek(*lista));
         printf("\n\n - Ingrese el nombre completo del alumno: ");
         scanf(" %[^\n]", x.nombreCompleto);
 
@@ -221,16 +245,16 @@ int modificar(char codigo[], LSO *lista)
             fflush(stdin);
             check_resp = scanf("%d", &resp);
         }
-        exito = resp;
+        *exito = resp;
         if (resp == 1)
         {
-            strcpy(lista->vipd[lista->cur].nombreCompleto, x.nombreCompleto);
-            strcpy(lista->vipd[lista->cur].mail, x.mail);
-            lista->vipd[lista->cur].nota = x.nota;
-            strcpy(lista->vipd[lista->cur].condicion, x.condicion);
+            strcpy(lista->vipd[pos].nombreCompleto, x.nombreCompleto);
+            strcpy(lista->vipd[pos].mail, x.mail);
+            lista->vipd[pos].nota = x.nota;
+            strcpy(lista->vipd[pos].condicion, x.condicion);
         }
     }
-    return exito;
+    else *exito = -1;
 }
 
 int memorizar(char direccionArchivo[], LSO *lista, int info[])
@@ -242,7 +266,7 @@ int memorizar(char direccionArchivo[], LSO *lista, int info[])
 
     else
     {
-        int n = 0, repetidos = 0;
+        int n = 0, repetidos = 0, exito;
         alumno x;
         char nombre[nomb_size], apellido[nomb_size];
         while (!feof(archivo) && !isFull(*lista))
@@ -255,17 +279,11 @@ int memorizar(char direccionArchivo[], LSO *lista, int info[])
             fscanf(archivo, "%d ", &x.nota);
             fscanf(archivo, "%[^\n] ", x.condicion);
 
-            if (isEmpty(*lista) == 1)
-                alta(x, lista), n++;
-
+            alta(x, lista, &exito);
+            if (exito == 0)
+                repetidos++;
             else
-            {
-                if (localizar(x.codigo, lista) == 0)
-                    repetidos++;
-
-                else
-                    alta(x, lista), n++;
-            }
+                n++;
         }
         info[0] = n, info[1] = repetidos;
     }
@@ -275,8 +293,11 @@ int memorizar(char direccionArchivo[], LSO *lista, int info[])
 
 alumno *evocar(char codigo[], LSO *lista)
 {
-    if (localizar(codigo, lista) == 0)
-        return &lista->vipd[lista->cur];
+    int pos, exito;
+    localizar(codigo, lista, &pos, &exito);
+
+    if (exito == 1)
+        return &lista->vipd[pos];
 
     else
         return NULL;
@@ -286,7 +307,7 @@ void mostrarEstructura(LSO *lista)
 {
     int aux = 0;
 
-    resetCur(lista);
+    lista->cur = 0;
     while (isOos(*lista) != 1)
     {
         if (aux > 3)
@@ -300,7 +321,7 @@ void mostrarEstructura(LSO *lista)
         }
         aux++;
         mostrarDatos(peek(*lista));
-        forward(lista);
+        lista->cur++;
     }
     printf("\n\n # No hay mas alumnos para mostrar...");
 }
